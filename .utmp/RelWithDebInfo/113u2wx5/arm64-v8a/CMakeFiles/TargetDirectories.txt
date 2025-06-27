@@ -1,0 +1,5 @@
+E:/Unity Projects/TaskPlanner - Copy/.utmp/RelWithDebInfo/113u2wx5/arm64-v8a/CMakeFiles/edit_cache.dir
+E:/Unity Projects/TaskPlanner - Copy/.utmp/RelWithDebInfo/113u2wx5/arm64-v8a/CMakeFiles/rebuild_cache.dir
+E:/Unity Projects/TaskPlanner - Copy/.utmp/RelWithDebInfo/113u2wx5/arm64-v8a/FramePacing/CMakeFiles/swappywrapper.dir
+E:/Unity Projects/TaskPlanner - Copy/.utmp/RelWithDebInfo/113u2wx5/arm64-v8a/FramePacing/CMakeFiles/edit_cache.dir
+E:/Unity Projects/TaskPlanner - Copy/.utmp/RelWithDebInfo/113u2wx5/arm64-v8a/FramePacing/CMakeFiles/rebuild_cache.dir
