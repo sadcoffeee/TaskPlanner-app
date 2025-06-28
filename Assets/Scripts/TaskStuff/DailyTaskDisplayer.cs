@@ -12,46 +12,74 @@ public class DailyTaskDisplayer : MonoBehaviour
     public GameObject indefiniteTaskCardPrefab;
     public GameObject descTaskCardPrefab;
     public GameObject descIndefiniteTaskCardPrefab;
+    public GameObject dayTitlePrefab;
+
 
     public RectTransform taskCardsHolder; // Parent holder for task cards
     public TextMeshProUGUI taskCardsTitle;
     public Sprite trashcan;
+    bool displayingTimedTasks = true;
 
     // Display tasks for a specific day
-    public void DisplayTimedTasks(DateTime whichDay)
+    public void DisplayTimedTasks()
     {
         ClearTaskCards();
-        Debug.Log("Displaying tasks for " + whichDay);
-        taskCardsTitle.text = FormatDateWithOrdinal(whichDay);
+        Debug.Log("Displaying all timed tasks");
+        displayingTimedTasks = true;
+
+        // Group tasks by date
+        var groupedTasks = new Dictionary<DateTime, List<Task>>();
 
         foreach (Task task in TaskManager.Instance.TimedTasks)
         {
-            // Check if the task's date matches the selected date (ignoring the time part)
-            if (task.DueDate.Date == whichDay.Date)
+            DateTime date = task.DueDate.Date;
+
+            if (!groupedTasks.ContainsKey(date))
+                groupedTasks[date] = new List<Task>();
+
+            groupedTasks[date].Add(task);
+        }
+
+        // Sort the dates closest to today first
+        var sortedDates = new List<DateTime>(groupedTasks.Keys);
+        sortedDates.Sort((a, b) => (a - DateTime.Today).Days.CompareTo((b - DateTime.Today).Days));
+
+        taskCardsTitle.text = "Scheduled tasks";
+
+        foreach (DateTime date in sortedDates)
+        {
+            // Create and format day title
+            GameObject title = Instantiate(dayTitlePrefab, taskCardsHolder);
+            title.GetComponentInChildren<TextMeshProUGUI>().text = FormatDateWithOrdinal(date);
+
+            foreach (Task task in groupedTasks[date])
             {
-                CreateTaskCard(task, taskCards.timed);
-            }
-            else if (task.DueDate.Date < DateTime.Today)
-            {
-                CreateTaskCard(task, taskCards.late);
+                if (date < DateTime.Today)
+                    CreateTaskCard(task, taskCards.late);
+                else
+                    CreateTaskCard(task, taskCards.timed);
             }
         }
     }
-    public void DisplayTodaysTasks()
-    {
-        DisplayTimedTasks(DateTime.Now);
-    }
+
     public void DisplayIndefiniteTasks()
     {
         ClearTaskCards();
         Debug.Log("Displaying indefinite tasks");
-        taskCardsTitle.text = "Indefinite tasks";
+        displayingTimedTasks = false;
+        taskCardsTitle.text = "Untimed tasks";
 
         foreach (Task task in TaskManager.Instance.IndefiniteTasks)
         {
             CreateTaskCard(task, taskCards.indefinite);
         }
     }
+    public void ToggleTaskDisplay()
+    {
+        if (displayingTimedTasks) DisplayIndefiniteTasks();
+        else DisplayTimedTasks();
+    }
+
 
     // Clear existing task cards from the UI
     private void ClearTaskCards()
@@ -96,7 +124,7 @@ public class DailyTaskDisplayer : MonoBehaviour
                         icon.AddComponent<Button>().onClick.AddListener(() =>
                         {
                             TaskManager.Instance.TimedTasks.Remove(task);
-                            DisplayTimedTasks(task.DueDate); // Refresh the display for the day after removing the task
+                            DisplayTimedTasks(); // Refresh the display for the day after removing the task
 
                         });
                     });
@@ -106,7 +134,7 @@ public class DailyTaskDisplayer : MonoBehaviour
                 taskCardInstance.transform.Find("CompleteTaskButton").GetComponent<Button>().onClick.AddListener(() =>
                 {
                     TaskManager.Instance.RemoveTask(task);
-                    DisplayTimedTasks(task.DueDate); // Refresh the display for the day after removing the task
+                    DisplayTimedTasks(); // Refresh the display for the day after removing the task
                 });
                 break;
             case taskCards.indefinite:
@@ -153,7 +181,7 @@ public class DailyTaskDisplayer : MonoBehaviour
                         icon.AddComponent<Button>().onClick.AddListener(() =>
                         {
                             TaskManager.Instance.TimedTasks.Remove(task);
-                            DisplayTimedTasks(DateTime.Today); // Refresh the display for the day after removing the task
+                            DisplayTimedTasks(); // Refresh the display for the day after removing the task
 
                         });
                     });
@@ -162,7 +190,7 @@ public class DailyTaskDisplayer : MonoBehaviour
                 lateTaskCardInstance.transform.Find("CompleteTaskButton").GetComponent<Button>().onClick.AddListener(() =>
                 {
                     TaskManager.Instance.RemoveTask(task);
-                    DisplayTimedTasks(DateTime.Now);
+                    DisplayTimedTasks();
                 });
                 break;
 
@@ -172,6 +200,8 @@ public class DailyTaskDisplayer : MonoBehaviour
     // Helper method to format the date with an ordinal suffix
     private string FormatDateWithOrdinal(DateTime date)
     {
+        if (date.Date == DateTime.Today.Date) return "Today";
+
         string dayWithSuffix = GetOrdinalSuffix(date.Day);
         return $"{date:MMMM} {dayWithSuffix}, {date:yyyy}";
     }

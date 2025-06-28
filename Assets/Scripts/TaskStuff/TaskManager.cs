@@ -27,7 +27,7 @@ public class TaskManager : MonoBehaviour
         saveFilePath = Path.Combine(Application.persistentDataPath, "REALtasks.json");
         LoadTasksFromJson();
 
-        GameObject.Find("ScriptHolder").GetComponent<DailyTaskDisplayer>().DisplayTimedTasks(DateTime.Now);
+        GameObject.Find("ScriptHolder").GetComponent<DailyTaskDisplayer>().DisplayTimedTasks();
     }
 
     public void AddTask(Task task)

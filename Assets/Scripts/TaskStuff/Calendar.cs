@@ -12,8 +12,14 @@ public class Calendar : MonoBehaviour
 
     private DateTime currentMonth;
 
+    private DateTime selectedDate;
+    private GameObject selectedDayButton;
+    public Color defaultColor = Color.white; // Set this in the inspector to match unselected days
+
+
     void Start()
     {
+        selectedDate = DateTime.Today;
         currentMonth = DateTime.Now;
         GenerateCalendar(currentMonth);
     }
@@ -52,17 +58,36 @@ public class Calendar : MonoBehaviour
             GameObject dayInstance = Instantiate(dayPrefab, calendarGrid);
             dayInstance.GetComponentInChildren<TextMeshProUGUI>().text = day.ToString();
 
-            // Highlight the current date if it matches
-            if (month.Year == today.Year && month.Month == today.Month && day == today.Day)
+            DateTime thisDay = new DateTime(month.Year, month.Month, day);
+            Image dayImage = dayInstance.GetComponent<Image>();
+
+            // Highlight if this is the selected date
+            if (thisDay == selectedDate)
             {
-                dayInstance.GetComponent<Image>().color = highlightColor;
+                dayImage.color = highlightColor;
+                selectedDayButton = dayInstance;
             }
+            else
+            {
+                dayImage.color = defaultColor;
+            }
+
+
 
             int dayCopy = day; // Prevent closure issue
             dayInstance.GetComponent<Button>().onClick.AddListener(() =>
             {
-                DateTime selectedDate = new DateTime(month.Year, month.Month, dayCopy);
-                FindObjectOfType<DailyTaskDisplayer>().DisplayTimedTasks(selectedDate);
+                // Reset previous highlight
+                if (selectedDayButton != null)
+                    selectedDayButton.GetComponent<Image>().color = defaultColor;
+
+                // Update new selection
+                selectedDate = new DateTime(month.Year, month.Month, dayCopy);
+                selectedDayButton = dayInstance;
+                selectedDayButton.GetComponent<Image>().color = highlightColor;
+
+                // Set the taskDate
+                transform.GetComponent<TaskBuilder>().taskDate = selectedDate;
             });
         }
     }

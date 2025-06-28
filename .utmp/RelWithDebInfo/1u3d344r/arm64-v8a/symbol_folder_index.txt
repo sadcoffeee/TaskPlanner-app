@@ -1,0 +1,1 @@
+C:\Users\peter\Documents\GitHub\TaskPlanner-app\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\build\intermediates\cxx\RelWithDebInfo\1u3d344r\obj\arm64-v8a
