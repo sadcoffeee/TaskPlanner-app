@@ -11,5 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FunScene.unity
     guid: ebae4c3dea727a047b04d73270d6c6a9
+  - enabled: 0
+    path: Assets/Scenes/FunScene decoration intact.unity
+    guid: c7d5a6eb54382234abaf38a7afb4d3ba
   m_configObjects:
     com.unity.adaptiveperformance.simulator.provider_settings: {fileID: 11400000, guid: f6868c7317912f7449bffe77f3cc87c0, type: 2}
+  m_UseUCBPForAssetBundles: 0
